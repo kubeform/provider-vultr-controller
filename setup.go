@@ -39,32 +39,36 @@ import (
 	admissionregistrationv1 "k8s.io/client-go/kubernetes/typed/admissionregistration/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/klog/v2"
-	domainv1alpha1 "kubeform.dev/provider-vultr-api/apis/domain/v1alpha1"
+	barev1alpha1 "kubeform.dev/provider-vultr-api/apis/bare/v1alpha1"
+	blockv1alpha1 "kubeform.dev/provider-vultr-api/apis/block/v1alpha1"
+	dnsv1alpha1 "kubeform.dev/provider-vultr-api/apis/dns/v1alpha1"
 	firewallv1alpha1 "kubeform.dev/provider-vultr-api/apis/firewall/v1alpha1"
-	imagev1alpha1 "kubeform.dev/provider-vultr-api/apis/image/v1alpha1"
 	instancev1alpha1 "kubeform.dev/provider-vultr-api/apis/instance/v1alpha1"
-	lkev1alpha1 "kubeform.dev/provider-vultr-api/apis/lke/v1alpha1"
-	nodebalancerv1alpha1 "kubeform.dev/provider-vultr-api/apis/nodebalancer/v1alpha1"
+	isov1alpha1 "kubeform.dev/provider-vultr-api/apis/iso/v1alpha1"
+	loadv1alpha1 "kubeform.dev/provider-vultr-api/apis/load/v1alpha1"
 	objectv1alpha1 "kubeform.dev/provider-vultr-api/apis/object/v1alpha1"
-	rdnsv1alpha1 "kubeform.dev/provider-vultr-api/apis/rdns/v1alpha1"
-	sshkeyv1alpha1 "kubeform.dev/provider-vultr-api/apis/sshkey/v1alpha1"
-	stackscriptv1alpha1 "kubeform.dev/provider-vultr-api/apis/stackscript/v1alpha1"
-	tokenv1alpha1 "kubeform.dev/provider-vultr-api/apis/token/v1alpha1"
+	privatev1alpha1 "kubeform.dev/provider-vultr-api/apis/private/v1alpha1"
+	reservedv1alpha1 "kubeform.dev/provider-vultr-api/apis/reserved/v1alpha1"
+	reversev1alpha1 "kubeform.dev/provider-vultr-api/apis/reverse/v1alpha1"
+	snapshotv1alpha1 "kubeform.dev/provider-vultr-api/apis/snapshot/v1alpha1"
+	sshv1alpha1 "kubeform.dev/provider-vultr-api/apis/ssh/v1alpha1"
+	startupv1alpha1 "kubeform.dev/provider-vultr-api/apis/startup/v1alpha1"
 	userv1alpha1 "kubeform.dev/provider-vultr-api/apis/user/v1alpha1"
-	volumev1alpha1 "kubeform.dev/provider-vultr-api/apis/volume/v1alpha1"
-	controllersdomain "kubeform.dev/provider-vultr-controller/controllers/domain"
+	controllersbare "kubeform.dev/provider-vultr-controller/controllers/bare"
+	controllersblock "kubeform.dev/provider-vultr-controller/controllers/block"
+	controllersdns "kubeform.dev/provider-vultr-controller/controllers/dns"
 	controllersfirewall "kubeform.dev/provider-vultr-controller/controllers/firewall"
-	controllersimage "kubeform.dev/provider-vultr-controller/controllers/image"
 	controllersinstance "kubeform.dev/provider-vultr-controller/controllers/instance"
-	controllerslke "kubeform.dev/provider-vultr-controller/controllers/lke"
-	controllersnodebalancer "kubeform.dev/provider-vultr-controller/controllers/nodebalancer"
+	controllersiso "kubeform.dev/provider-vultr-controller/controllers/iso"
+	controllersload "kubeform.dev/provider-vultr-controller/controllers/load"
 	controllersobject "kubeform.dev/provider-vultr-controller/controllers/object"
-	controllersrdns "kubeform.dev/provider-vultr-controller/controllers/rdns"
-	controllerssshkey "kubeform.dev/provider-vultr-controller/controllers/sshkey"
-	controllersstackscript "kubeform.dev/provider-vultr-controller/controllers/stackscript"
-	controllerstoken "kubeform.dev/provider-vultr-controller/controllers/token"
+	controllersprivate "kubeform.dev/provider-vultr-controller/controllers/private"
+	controllersreserved "kubeform.dev/provider-vultr-controller/controllers/reserved"
+	controllersreverse "kubeform.dev/provider-vultr-controller/controllers/reverse"
+	controllerssnapshot "kubeform.dev/provider-vultr-controller/controllers/snapshot"
+	controllersssh "kubeform.dev/provider-vultr-controller/controllers/ssh"
+	controllersstartup "kubeform.dev/provider-vultr-controller/controllers/startup"
 	controllersuser "kubeform.dev/provider-vultr-controller/controllers/user"
-	controllersvolume "kubeform.dev/provider-vultr-controller/controllers/volume"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
@@ -249,36 +253,72 @@ func updateVWC(vwcClient *admissionregistrationv1.AdmissionregistrationV1Client,
 func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVersionKind, auditor *auditlib.EventPublisher, watchOnlyDefault bool) error {
 	switch gvk {
 	case schema.GroupVersionKind{
-		Group:   "domain.vultr.kubeform.com",
+		Group:   "bare.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "MetalServer",
+	}:
+		if err := (&controllersbare.MetalServerReconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("MetalServer"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         vultr.Provider(),
+			Resource:         vultr.Provider().ResourcesMap["vultr_bare_metal_server"],
+			TypeName:         "vultr_bare_metal_server",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "MetalServer")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "block.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Storage",
+	}:
+		if err := (&controllersblock.StorageReconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("Storage"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         vultr.Provider(),
+			Resource:         vultr.Provider().ResourcesMap["vultr_block_storage"],
+			TypeName:         "vultr_block_storage",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Storage")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "dns.vultr.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Domain",
 	}:
-		if err := (&controllersdomain.DomainReconciler{
+		if err := (&controllersdns.DomainReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Domain"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_domain"],
-			TypeName:         "vultr_domain",
+			Resource:         vultr.Provider().ResourcesMap["vultr_dns_domain"],
+			TypeName:         "vultr_dns_domain",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
 			setupLog.Error(err, "unable to create controller", "controller", "Domain")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "domain.vultr.kubeform.com",
+		Group:   "dns.vultr.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Record",
 	}:
-		if err := (&controllersdomain.RecordReconciler{
+		if err := (&controllersdns.RecordReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Record"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_domain_record"],
-			TypeName:         "vultr_domain_record",
+			Resource:         vultr.Provider().ResourcesMap["vultr_dns_record"],
+			TypeName:         "vultr_dns_record",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
 			setupLog.Error(err, "unable to create controller", "controller", "Record")
@@ -287,37 +327,37 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 	case schema.GroupVersionKind{
 		Group:   "firewall.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Firewall",
+		Kind:    "Group",
 	}:
-		if err := (&controllersfirewall.FirewallReconciler{
+		if err := (&controllersfirewall.GroupReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Firewall"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Group"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_firewall"],
-			TypeName:         "vultr_firewall",
+			Resource:         vultr.Provider().ResourcesMap["vultr_firewall_group"],
+			TypeName:         "vultr_firewall_group",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Firewall")
+			setupLog.Error(err, "unable to create controller", "controller", "Group")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "image.vultr.kubeform.com",
+		Group:   "firewall.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Image",
+		Kind:    "Rule",
 	}:
-		if err := (&controllersimage.ImageReconciler{
+		if err := (&controllersfirewall.RuleReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Image"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Rule"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_image"],
-			TypeName:         "vultr_image",
+			Resource:         vultr.Provider().ResourcesMap["vultr_firewall_rule"],
+			TypeName:         "vultr_firewall_rule",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Image")
+			setupLog.Error(err, "unable to create controller", "controller", "Rule")
 			return err
 		}
 	case schema.GroupVersionKind{
@@ -341,217 +381,217 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 	case schema.GroupVersionKind{
 		Group:   "instance.vultr.kubeform.com",
 		Version: "v1alpha1",
+		Kind:    "Ipv4",
+	}:
+		if err := (&controllersinstance.Ipv4Reconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("Ipv4"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         vultr.Provider(),
+			Resource:         vultr.Provider().ResourcesMap["vultr_instance_ipv4"],
+			TypeName:         "vultr_instance_ipv4",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Ipv4")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "iso.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Private",
+	}:
+		if err := (&controllersiso.PrivateReconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("Private"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         vultr.Provider(),
+			Resource:         vultr.Provider().ResourcesMap["vultr_iso_private"],
+			TypeName:         "vultr_iso_private",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Private")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "load.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Balancer",
+	}:
+		if err := (&controllersload.BalancerReconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("Balancer"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         vultr.Provider(),
+			Resource:         vultr.Provider().ResourcesMap["vultr_load_balancer"],
+			TypeName:         "vultr_load_balancer",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Balancer")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "object.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Storage",
+	}:
+		if err := (&controllersobject.StorageReconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("Storage"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         vultr.Provider(),
+			Resource:         vultr.Provider().ResourcesMap["vultr_object_storage"],
+			TypeName:         "vultr_object_storage",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Storage")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "private.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Network",
+	}:
+		if err := (&controllersprivate.NetworkReconciler{
+			Client:           mgr.GetClient(),
+			Log:              ctrl.Log.WithName("controllers").WithName("Network"),
+			Scheme:           mgr.GetScheme(),
+			Gvk:              gvk,
+			Provider:         vultr.Provider(),
+			Resource:         vultr.Provider().ResourcesMap["vultr_private_network"],
+			TypeName:         "vultr_private_network",
+			WatchOnlyDefault: watchOnlyDefault,
+		}).SetupWithManager(ctx, mgr, auditor); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Network")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "reserved.vultr.kubeform.com",
+		Version: "v1alpha1",
 		Kind:    "Ip",
 	}:
-		if err := (&controllersinstance.IpReconciler{
+		if err := (&controllersreserved.IpReconciler{
 			Client:           mgr.GetClient(),
 			Log:              ctrl.Log.WithName("controllers").WithName("Ip"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_instance_ip"],
-			TypeName:         "vultr_instance_ip",
+			Resource:         vultr.Provider().ResourcesMap["vultr_reserved_ip"],
+			TypeName:         "vultr_reserved_ip",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
 			setupLog.Error(err, "unable to create controller", "controller", "Ip")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "lke.vultr.kubeform.com",
+		Group:   "reverse.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Cluster",
+		Kind:    "Ipv4",
 	}:
-		if err := (&controllerslke.ClusterReconciler{
+		if err := (&controllersreverse.Ipv4Reconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Cluster"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Ipv4"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_lke_cluster"],
-			TypeName:         "vultr_lke_cluster",
+			Resource:         vultr.Provider().ResourcesMap["vultr_reverse_ipv4"],
+			TypeName:         "vultr_reverse_ipv4",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Cluster")
+			setupLog.Error(err, "unable to create controller", "controller", "Ipv4")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "nodebalancer.vultr.kubeform.com",
+		Group:   "reverse.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Nodebalancer",
+		Kind:    "Ipv6",
 	}:
-		if err := (&controllersnodebalancer.NodebalancerReconciler{
+		if err := (&controllersreverse.Ipv6Reconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Nodebalancer"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Ipv6"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_nodebalancer"],
-			TypeName:         "vultr_nodebalancer",
+			Resource:         vultr.Provider().ResourcesMap["vultr_reverse_ipv6"],
+			TypeName:         "vultr_reverse_ipv6",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Nodebalancer")
+			setupLog.Error(err, "unable to create controller", "controller", "Ipv6")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "nodebalancer.vultr.kubeform.com",
+		Group:   "snapshot.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Config",
+		Kind:    "Snapshot",
 	}:
-		if err := (&controllersnodebalancer.ConfigReconciler{
+		if err := (&controllerssnapshot.SnapshotReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Config"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Snapshot"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_nodebalancer_config"],
-			TypeName:         "vultr_nodebalancer_config",
+			Resource:         vultr.Provider().ResourcesMap["vultr_snapshot"],
+			TypeName:         "vultr_snapshot",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Config")
+			setupLog.Error(err, "unable to create controller", "controller", "Snapshot")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "nodebalancer.vultr.kubeform.com",
+		Group:   "snapshot.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Node",
+		Kind:    "FromURL",
 	}:
-		if err := (&controllersnodebalancer.NodeReconciler{
+		if err := (&controllerssnapshot.FromURLReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Node"),
+			Log:              ctrl.Log.WithName("controllers").WithName("FromURL"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_nodebalancer_node"],
-			TypeName:         "vultr_nodebalancer_node",
+			Resource:         vultr.Provider().ResourcesMap["vultr_snapshot_from_url"],
+			TypeName:         "vultr_snapshot_from_url",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Node")
+			setupLog.Error(err, "unable to create controller", "controller", "FromURL")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "object.vultr.kubeform.com",
+		Group:   "ssh.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "StorageBucket",
+		Kind:    "Key",
 	}:
-		if err := (&controllersobject.StorageBucketReconciler{
+		if err := (&controllersssh.KeyReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("StorageBucket"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Key"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_object_storage_bucket"],
-			TypeName:         "vultr_object_storage_bucket",
+			Resource:         vultr.Provider().ResourcesMap["vultr_ssh_key"],
+			TypeName:         "vultr_ssh_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "StorageBucket")
+			setupLog.Error(err, "unable to create controller", "controller", "Key")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "object.vultr.kubeform.com",
+		Group:   "startup.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "StorageKey",
+		Kind:    "Script",
 	}:
-		if err := (&controllersobject.StorageKeyReconciler{
+		if err := (&controllersstartup.ScriptReconciler{
 			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("StorageKey"),
+			Log:              ctrl.Log.WithName("controllers").WithName("Script"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
 			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_object_storage_key"],
-			TypeName:         "vultr_object_storage_key",
+			Resource:         vultr.Provider().ResourcesMap["vultr_startup_script"],
+			TypeName:         "vultr_startup_script",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "StorageKey")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "object.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "StorageObject",
-	}:
-		if err := (&controllersobject.StorageObjectReconciler{
-			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("StorageObject"),
-			Scheme:           mgr.GetScheme(),
-			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_object_storage_object"],
-			TypeName:         "vultr_object_storage_object",
-			WatchOnlyDefault: watchOnlyDefault,
-		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "StorageObject")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "rdns.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Rdns",
-	}:
-		if err := (&controllersrdns.RdnsReconciler{
-			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Rdns"),
-			Scheme:           mgr.GetScheme(),
-			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_rdns"],
-			TypeName:         "vultr_rdns",
-			WatchOnlyDefault: watchOnlyDefault,
-		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Rdns")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "sshkey.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Sshkey",
-	}:
-		if err := (&controllerssshkey.SshkeyReconciler{
-			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Sshkey"),
-			Scheme:           mgr.GetScheme(),
-			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_sshkey"],
-			TypeName:         "vultr_sshkey",
-			WatchOnlyDefault: watchOnlyDefault,
-		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Sshkey")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "stackscript.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Stackscript",
-	}:
-		if err := (&controllersstackscript.StackscriptReconciler{
-			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Stackscript"),
-			Scheme:           mgr.GetScheme(),
-			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_stackscript"],
-			TypeName:         "vultr_stackscript",
-			WatchOnlyDefault: watchOnlyDefault,
-		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Stackscript")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "token.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Token",
-	}:
-		if err := (&controllerstoken.TokenReconciler{
-			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Token"),
-			Scheme:           mgr.GetScheme(),
-			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_token"],
-			TypeName:         "vultr_token",
-			WatchOnlyDefault: watchOnlyDefault,
-		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Token")
+			setupLog.Error(err, "unable to create controller", "controller", "Script")
 			return err
 		}
 	case schema.GroupVersionKind{
@@ -572,24 +612,6 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			setupLog.Error(err, "unable to create controller", "controller", "User")
 			return err
 		}
-	case schema.GroupVersionKind{
-		Group:   "volume.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Volume",
-	}:
-		if err := (&controllersvolume.VolumeReconciler{
-			Client:           mgr.GetClient(),
-			Log:              ctrl.Log.WithName("controllers").WithName("Volume"),
-			Scheme:           mgr.GetScheme(),
-			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_volume"],
-			TypeName:         "vultr_volume",
-			WatchOnlyDefault: watchOnlyDefault,
-		}).SetupWithManager(ctx, mgr, auditor); err != nil {
-			setupLog.Error(err, "unable to create controller", "controller", "Volume")
-			return err
-		}
 
 	default:
 		return fmt.Errorf("Invalid CRD")
@@ -601,39 +623,57 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 func SetupWebhook(mgr manager.Manager, gvk schema.GroupVersionKind) error {
 	switch gvk {
 	case schema.GroupVersionKind{
-		Group:   "domain.vultr.kubeform.com",
+		Group:   "bare.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "MetalServer",
+	}:
+		if err := (&barev1alpha1.MetalServer{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "MetalServer")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "block.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Storage",
+	}:
+		if err := (&blockv1alpha1.Storage{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Storage")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "dns.vultr.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Domain",
 	}:
-		if err := (&domainv1alpha1.Domain{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&dnsv1alpha1.Domain{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Domain")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "domain.vultr.kubeform.com",
+		Group:   "dns.vultr.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Record",
 	}:
-		if err := (&domainv1alpha1.Record{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&dnsv1alpha1.Record{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Record")
 			return err
 		}
 	case schema.GroupVersionKind{
 		Group:   "firewall.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Firewall",
+		Kind:    "Group",
 	}:
-		if err := (&firewallv1alpha1.Firewall{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Firewall")
+		if err := (&firewallv1alpha1.Group{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Group")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "image.vultr.kubeform.com",
+		Group:   "firewall.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Image",
+		Kind:    "Rule",
 	}:
-		if err := (&imagev1alpha1.Image{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Image")
+		if err := (&firewallv1alpha1.Rule{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Rule")
 			return err
 		}
 	case schema.GroupVersionKind{
@@ -648,109 +688,109 @@ func SetupWebhook(mgr manager.Manager, gvk schema.GroupVersionKind) error {
 	case schema.GroupVersionKind{
 		Group:   "instance.vultr.kubeform.com",
 		Version: "v1alpha1",
+		Kind:    "Ipv4",
+	}:
+		if err := (&instancev1alpha1.Ipv4{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Ipv4")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "iso.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Private",
+	}:
+		if err := (&isov1alpha1.Private{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Private")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "load.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Balancer",
+	}:
+		if err := (&loadv1alpha1.Balancer{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Balancer")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "object.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Storage",
+	}:
+		if err := (&objectv1alpha1.Storage{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Storage")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "private.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Network",
+	}:
+		if err := (&privatev1alpha1.Network{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Network")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "reserved.vultr.kubeform.com",
+		Version: "v1alpha1",
 		Kind:    "Ip",
 	}:
-		if err := (&instancev1alpha1.Ip{}).SetupWebhookWithManager(mgr); err != nil {
+		if err := (&reservedv1alpha1.Ip{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Ip")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "lke.vultr.kubeform.com",
+		Group:   "reverse.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Cluster",
+		Kind:    "Ipv4",
 	}:
-		if err := (&lkev1alpha1.Cluster{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Cluster")
+		if err := (&reversev1alpha1.Ipv4{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Ipv4")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "nodebalancer.vultr.kubeform.com",
+		Group:   "reverse.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Nodebalancer",
+		Kind:    "Ipv6",
 	}:
-		if err := (&nodebalancerv1alpha1.Nodebalancer{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Nodebalancer")
+		if err := (&reversev1alpha1.Ipv6{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Ipv6")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "nodebalancer.vultr.kubeform.com",
+		Group:   "snapshot.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Config",
+		Kind:    "Snapshot",
 	}:
-		if err := (&nodebalancerv1alpha1.Config{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Config")
+		if err := (&snapshotv1alpha1.Snapshot{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Snapshot")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "nodebalancer.vultr.kubeform.com",
+		Group:   "snapshot.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "Node",
+		Kind:    "FromURL",
 	}:
-		if err := (&nodebalancerv1alpha1.Node{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Node")
+		if err := (&snapshotv1alpha1.FromURL{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "FromURL")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "object.vultr.kubeform.com",
+		Group:   "ssh.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "StorageBucket",
+		Kind:    "Key",
 	}:
-		if err := (&objectv1alpha1.StorageBucket{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "StorageBucket")
+		if err := (&sshv1alpha1.Key{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Key")
 			return err
 		}
 	case schema.GroupVersionKind{
-		Group:   "object.vultr.kubeform.com",
+		Group:   "startup.vultr.kubeform.com",
 		Version: "v1alpha1",
-		Kind:    "StorageKey",
+		Kind:    "Script",
 	}:
-		if err := (&objectv1alpha1.StorageKey{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "StorageKey")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "object.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "StorageObject",
-	}:
-		if err := (&objectv1alpha1.StorageObject{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "StorageObject")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "rdns.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Rdns",
-	}:
-		if err := (&rdnsv1alpha1.Rdns{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Rdns")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "sshkey.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Sshkey",
-	}:
-		if err := (&sshkeyv1alpha1.Sshkey{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Sshkey")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "stackscript.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Stackscript",
-	}:
-		if err := (&stackscriptv1alpha1.Stackscript{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Stackscript")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "token.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Token",
-	}:
-		if err := (&tokenv1alpha1.Token{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Token")
+		if err := (&startupv1alpha1.Script{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Script")
 			return err
 		}
 	case schema.GroupVersionKind{
@@ -760,15 +800,6 @@ func SetupWebhook(mgr manager.Manager, gvk schema.GroupVersionKind) error {
 	}:
 		if err := (&userv1alpha1.User{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "User")
-			return err
-		}
-	case schema.GroupVersionKind{
-		Group:   "volume.vultr.kubeform.com",
-		Version: "v1alpha1",
-		Kind:    "Volume",
-	}:
-		if err := (&volumev1alpha1.Volume{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "Volume")
 			return err
 		}
 

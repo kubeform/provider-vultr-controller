@@ -11,11 +11,9 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.6.0
 	github.com/imdario/mergo v0.3.12
 	github.com/json-iterator/go v1.1.11
-	github.com/vultr/terraform-provider-vultr v1.19.1
-	github.com/onsi/ginkgo v1.16.4
-	github.com/onsi/gomega v1.13.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.1.3
+	github.com/vultr/terraform-provider-vultr v1.3.4-0.20210625135956-5cdfa3b5e742
 	go.bytebuilders.dev/audit v0.0.7
 	go.bytebuilders.dev/license-verifier v0.9.2
 	go.bytebuilders.dev/license-verifier/kubernetes v0.9.2
@@ -27,9 +25,8 @@ require (
 	k8s.io/client-go v0.21.1
 	k8s.io/klog/v2 v2.8.0
 	kmodules.xyz/client-go v0.0.0-20210617233340-13d22e91512b
-	kmodules.xyz/constants v0.0.0-20210218100002-2c304bfda278
 	kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5
-	kubeform.dev/provider-vultr-api v0.2.0
+	kubeform.dev/provider-vultr-api v0.0.0-20210729221117-24504528cc2d
 	sigs.k8s.io/cli-utils v0.25.0
 	sigs.k8s.io/controller-runtime v0.9.0
 )
@@ -116,7 +113,7 @@ replace google.golang.org/api => google.golang.org/api v0.20.0
 
 replace google.golang.org/genproto => google.golang.org/genproto v0.0.0-20201110150050-8816d57aaa9a
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.27.1
+replace google.golang.org/grpc => google.golang.org/grpc v1.32.0
 
 replace helm.sh/helm/v3 => github.com/kubepack/helm/v3 v3.1.0-rc.1.0.20210503022716-7e2d4913a125
 
