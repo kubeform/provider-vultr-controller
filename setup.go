@@ -73,6 +73,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
+var _provider = vultr.Provider()
+
 var runningControllers = struct {
 	sync.RWMutex
 	mp map[schema.GroupVersionKind]bool
@@ -262,8 +264,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("MetalServer"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_bare_metal_server"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_bare_metal_server"],
 			TypeName:         "vultr_bare_metal_server",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -280,8 +282,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Storage"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_block_storage"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_block_storage"],
 			TypeName:         "vultr_block_storage",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -298,8 +300,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Domain"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_dns_domain"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_dns_domain"],
 			TypeName:         "vultr_dns_domain",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -316,8 +318,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Record"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_dns_record"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_dns_record"],
 			TypeName:         "vultr_dns_record",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -334,8 +336,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Group"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_firewall_group"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_firewall_group"],
 			TypeName:         "vultr_firewall_group",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -352,8 +354,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Rule"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_firewall_rule"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_firewall_rule"],
 			TypeName:         "vultr_firewall_rule",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -370,8 +372,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Instance"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_instance"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_instance"],
 			TypeName:         "vultr_instance",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -388,8 +390,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Ipv4"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_instance_ipv4"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_instance_ipv4"],
 			TypeName:         "vultr_instance_ipv4",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -406,8 +408,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Private"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_iso_private"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_iso_private"],
 			TypeName:         "vultr_iso_private",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -424,8 +426,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Balancer"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_load_balancer"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_load_balancer"],
 			TypeName:         "vultr_load_balancer",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -442,8 +444,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Storage"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_object_storage"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_object_storage"],
 			TypeName:         "vultr_object_storage",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -460,8 +462,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Network"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_private_network"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_private_network"],
 			TypeName:         "vultr_private_network",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -478,8 +480,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Ip"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_reserved_ip"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_reserved_ip"],
 			TypeName:         "vultr_reserved_ip",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -496,8 +498,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Ipv4"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_reverse_ipv4"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_reverse_ipv4"],
 			TypeName:         "vultr_reverse_ipv4",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -514,8 +516,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Ipv6"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_reverse_ipv6"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_reverse_ipv6"],
 			TypeName:         "vultr_reverse_ipv6",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -532,8 +534,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Snapshot"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_snapshot"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_snapshot"],
 			TypeName:         "vultr_snapshot",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -550,8 +552,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("FromURL"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_snapshot_from_url"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_snapshot_from_url"],
 			TypeName:         "vultr_snapshot_from_url",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -568,8 +570,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Key"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_ssh_key"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_ssh_key"],
 			TypeName:         "vultr_ssh_key",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -586,8 +588,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("Script"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_startup_script"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_startup_script"],
 			TypeName:         "vultr_startup_script",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
@@ -604,8 +606,8 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			Log:              ctrl.Log.WithName("controllers").WithName("User"),
 			Scheme:           mgr.GetScheme(),
 			Gvk:              gvk,
-			Provider:         vultr.Provider(),
-			Resource:         vultr.Provider().ResourcesMap["vultr_user"],
+			Provider:         _provider,
+			Resource:         _provider.ResourcesMap["vultr_user"],
 			TypeName:         "vultr_user",
 			WatchOnlyDefault: watchOnlyDefault,
 		}).SetupWithManager(ctx, mgr, auditor); err != nil {
