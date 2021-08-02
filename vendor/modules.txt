@@ -1090,7 +1090,7 @@ kmodules.xyz/resource-metadata/pkg/graph
 # kubeform.dev/apimachinery v0.0.0-20210629153539-7bcd34a30eb5
 ## explicit
 kubeform.dev/apimachinery/api/v1alpha1
-# kubeform.dev/provider-vultr-api v0.0.0-20210729221117-24504528cc2d
+# kubeform.dev/provider-vultr-api v0.3.0
 ## explicit
 kubeform.dev/provider-vultr-api/api/provider
 kubeform.dev/provider-vultr-api/apis/bare
