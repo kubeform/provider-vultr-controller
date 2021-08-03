@@ -3,7 +3,7 @@
 
 # provider-vultr-controller
 
-Kubeform controller for [Terraform Vultr Provider](https://github.com/equinix/terraform-provider-metal)
+Kubeform controller for [Terraform Vultr Provider](https://github.com/vultr/terraform-provider-vultr)
 
 ## Installation
 
