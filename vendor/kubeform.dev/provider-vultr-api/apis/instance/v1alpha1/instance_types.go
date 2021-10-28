@@ -68,6 +68,8 @@ type InstanceSpec struct {
 }
 
 type InstanceSpecResource struct {
+	Timeouts *base.ResourceTimeout `json:"timeouts,omitempty" tf:"timeouts"`
+
 	ID string `json:"id,omitempty" tf:"id,omitempty"`
 
 	// +optional
@@ -101,6 +103,8 @@ type InstanceSpecResource struct {
 	GatewayV4 *string `json:"gatewayV4,omitempty" tf:"gateway_v4"`
 	// +optional
 	Hostname *string `json:"hostname,omitempty" tf:"hostname"`
+	// +optional
+	ImageID *string `json:"imageID,omitempty" tf:"image_id"`
 	// +optional
 	InternalIP *string `json:"internalIP,omitempty" tf:"internal_ip"`
 	// +optional

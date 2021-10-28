@@ -79,6 +79,8 @@ type MetalServerSpecResource struct {
 	// +optional
 	Hostname *string `json:"hostname,omitempty" tf:"hostname"`
 	// +optional
+	ImageID *string `json:"imageID,omitempty" tf:"image_id"`
+	// +optional
 	Label *string `json:"label,omitempty" tf:"label"`
 	// +optional
 	MacAddress *int64 `json:"macAddress,omitempty" tf:"mac_address"`

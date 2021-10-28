@@ -27,6 +27,7 @@ import (
 	firewallv1alpha1 "kubeform.dev/provider-vultr-api/apis/firewall/v1alpha1"
 	instancev1alpha1 "kubeform.dev/provider-vultr-api/apis/instance/v1alpha1"
 	isov1alpha1 "kubeform.dev/provider-vultr-api/apis/iso/v1alpha1"
+	kubernetesv1alpha1 "kubeform.dev/provider-vultr-api/apis/kubernetes/v1alpha1"
 	loadv1alpha1 "kubeform.dev/provider-vultr-api/apis/load/v1alpha1"
 	objectv1alpha1 "kubeform.dev/provider-vultr-api/apis/object/v1alpha1"
 	privatev1alpha1 "kubeform.dev/provider-vultr-api/apis/private/v1alpha1"
@@ -117,6 +118,22 @@ var (
 		}: {
 			JsonIt:       controllers.GetJSONItr(isov1alpha1.GetEncoder(), isov1alpha1.GetDecoder()),
 			ResourceType: "vultr_iso_private",
+		},
+		{
+			Group:    "kubernetes.vultr.kubeform.com",
+			Version:  "v1alpha1",
+			Resource: "kubernetes",
+		}: {
+			JsonIt:       controllers.GetJSONItr(kubernetesv1alpha1.GetEncoder(), kubernetesv1alpha1.GetDecoder()),
+			ResourceType: "vultr_kubernetes",
+		},
+		{
+			Group:    "kubernetes.vultr.kubeform.com",
+			Version:  "v1alpha1",
+			Resource: "nodepools",
+		}: {
+			JsonIt:       controllers.GetJSONItr(kubernetesv1alpha1.GetEncoder(), kubernetesv1alpha1.GetDecoder()),
+			ResourceType: "vultr_kubernetes_node_pools",
 		},
 		{
 			Group:    "load.vultr.kubeform.com",
