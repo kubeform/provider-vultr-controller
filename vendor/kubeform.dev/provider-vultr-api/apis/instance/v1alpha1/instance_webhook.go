@@ -43,6 +43,7 @@ var _ webhook.Validator = &Instance{}
 
 var instanceForceNewList = map[string]bool{
 	"/app_id":         true,
+	"/image_id":       true,
 	"/os_id":          true,
 	"/region":         true,
 	"/reserved_ip_id": true,

@@ -169,6 +169,11 @@ func (in *MetalServerSpecResource) DeepCopyInto(out *MetalServerSpecResource) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.ImageID != nil {
+		in, out := &in.ImageID, &out.ImageID
+		*out = new(string)
+		**out = **in
+	}
 	if in.Label != nil {
 		in, out := &in.Label, &out.Label
 		*out = new(string)

@@ -44,6 +44,7 @@ var _ webhook.Validator = &MetalServer{}
 var metalserverForceNewList = map[string]bool{
 	"/enable_ipv6": true,
 	"/hostname":    true,
+	"/image_id":    true,
 	"/plan":        true,
 	"/region":      true,
 	"/script_id":   true,

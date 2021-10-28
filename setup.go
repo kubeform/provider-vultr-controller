@@ -45,6 +45,7 @@ import (
 	firewallv1alpha1 "kubeform.dev/provider-vultr-api/apis/firewall/v1alpha1"
 	instancev1alpha1 "kubeform.dev/provider-vultr-api/apis/instance/v1alpha1"
 	isov1alpha1 "kubeform.dev/provider-vultr-api/apis/iso/v1alpha1"
+	kubernetesv1alpha1 "kubeform.dev/provider-vultr-api/apis/kubernetes/v1alpha1"
 	loadv1alpha1 "kubeform.dev/provider-vultr-api/apis/load/v1alpha1"
 	objectv1alpha1 "kubeform.dev/provider-vultr-api/apis/object/v1alpha1"
 	privatev1alpha1 "kubeform.dev/provider-vultr-api/apis/private/v1alpha1"
@@ -60,6 +61,7 @@ import (
 	controllersfirewall "kubeform.dev/provider-vultr-controller/controllers/firewall"
 	controllersinstance "kubeform.dev/provider-vultr-controller/controllers/instance"
 	controllersiso "kubeform.dev/provider-vultr-controller/controllers/iso"
+	controllerskubernetes "kubeform.dev/provider-vultr-controller/controllers/kubernetes"
 	controllersload "kubeform.dev/provider-vultr-controller/controllers/load"
 	controllersobject "kubeform.dev/provider-vultr-controller/controllers/object"
 	controllersprivate "kubeform.dev/provider-vultr-controller/controllers/private"
@@ -409,6 +411,40 @@ func SetupManager(ctx context.Context, mgr manager.Manager, gvk schema.GroupVers
 			return err
 		}
 	case schema.GroupVersionKind{
+		Group:   "kubernetes.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Kubernetes",
+	}:
+		if err := (&controllerskubernetes.KubernetesReconciler{
+			Client:   mgr.GetClient(),
+			Log:      ctrl.Log.WithName("controllers").WithName("Kubernetes"),
+			Scheme:   mgr.GetScheme(),
+			Gvk:      gvk,
+			Provider: _provider,
+			Resource: _provider.ResourcesMap["vultr_kubernetes"],
+			TypeName: "vultr_kubernetes",
+		}).SetupWithManager(ctx, mgr, auditor, restrictToNamespace); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "Kubernetes")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "kubernetes.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "NodePools",
+	}:
+		if err := (&controllerskubernetes.NodePoolsReconciler{
+			Client:   mgr.GetClient(),
+			Log:      ctrl.Log.WithName("controllers").WithName("NodePools"),
+			Scheme:   mgr.GetScheme(),
+			Gvk:      gvk,
+			Provider: _provider,
+			Resource: _provider.ResourcesMap["vultr_kubernetes_node_pools"],
+			TypeName: "vultr_kubernetes_node_pools",
+		}).SetupWithManager(ctx, mgr, auditor, restrictToNamespace); err != nil {
+			setupLog.Error(err, "unable to create controller", "controller", "NodePools")
+			return err
+		}
+	case schema.GroupVersionKind{
 		Group:   "load.vultr.kubeform.com",
 		Version: "v1alpha1",
 		Kind:    "Balancer",
@@ -684,6 +720,24 @@ func SetupWebhook(mgr manager.Manager, gvk schema.GroupVersionKind) error {
 	}:
 		if err := (&isov1alpha1.Private{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to create webhook", "webhook", "Private")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "kubernetes.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "Kubernetes",
+	}:
+		if err := (&kubernetesv1alpha1.Kubernetes{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "Kubernetes")
+			return err
+		}
+	case schema.GroupVersionKind{
+		Group:   "kubernetes.vultr.kubeform.com",
+		Version: "v1alpha1",
+		Kind:    "NodePools",
+	}:
+		if err := (&kubernetesv1alpha1.NodePools{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "NodePools")
 			return err
 		}
 	case schema.GroupVersionKind{

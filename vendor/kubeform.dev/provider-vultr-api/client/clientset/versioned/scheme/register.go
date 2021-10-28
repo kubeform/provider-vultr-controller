@@ -25,6 +25,7 @@ import (
 	firewallv1alpha1 "kubeform.dev/provider-vultr-api/apis/firewall/v1alpha1"
 	instancev1alpha1 "kubeform.dev/provider-vultr-api/apis/instance/v1alpha1"
 	isov1alpha1 "kubeform.dev/provider-vultr-api/apis/iso/v1alpha1"
+	kubernetesv1alpha1 "kubeform.dev/provider-vultr-api/apis/kubernetes/v1alpha1"
 	loadv1alpha1 "kubeform.dev/provider-vultr-api/apis/load/v1alpha1"
 	objectv1alpha1 "kubeform.dev/provider-vultr-api/apis/object/v1alpha1"
 	privatev1alpha1 "kubeform.dev/provider-vultr-api/apis/private/v1alpha1"
@@ -52,6 +53,7 @@ var localSchemeBuilder = runtime.SchemeBuilder{
 	firewallv1alpha1.AddToScheme,
 	instancev1alpha1.AddToScheme,
 	isov1alpha1.AddToScheme,
+	kubernetesv1alpha1.AddToScheme,
 	loadv1alpha1.AddToScheme,
 	objectv1alpha1.AddToScheme,
 	privatev1alpha1.AddToScheme,
