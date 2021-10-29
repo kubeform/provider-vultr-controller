@@ -1295,7 +1295,7 @@ kmodules.xyz/resource-metrics/api
 ## explicit
 kubeform.dev/apimachinery/api/v1alpha1
 kubeform.dev/apimachinery/pkg/util
-# kubeform.dev/provider-vultr-api v0.3.1-0.20211028194701-2fe95a508fd4
+# kubeform.dev/provider-vultr-api v0.4.0
 ## explicit
 kubeform.dev/provider-vultr-api/api/provider
 kubeform.dev/provider-vultr-api/apis/bare
