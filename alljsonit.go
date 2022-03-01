@@ -45,186 +45,184 @@ type Data struct {
 	ResourceType string
 }
 
-var (
-	allJsonIt = map[schema.GroupVersionResource]Data{
-		{
-			Group:    "bare.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "metalservers",
-		}: {
-			JsonIt:       controllers.GetJSONItr(barev1alpha1.GetEncoder(), barev1alpha1.GetDecoder()),
-			ResourceType: "vultr_bare_metal_server",
-		},
-		{
-			Group:    "block.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "storages",
-		}: {
-			JsonIt:       controllers.GetJSONItr(blockv1alpha1.GetEncoder(), blockv1alpha1.GetDecoder()),
-			ResourceType: "vultr_block_storage",
-		},
-		{
-			Group:    "dns.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "domains",
-		}: {
-			JsonIt:       controllers.GetJSONItr(dnsv1alpha1.GetEncoder(), dnsv1alpha1.GetDecoder()),
-			ResourceType: "vultr_dns_domain",
-		},
-		{
-			Group:    "dns.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "records",
-		}: {
-			JsonIt:       controllers.GetJSONItr(dnsv1alpha1.GetEncoder(), dnsv1alpha1.GetDecoder()),
-			ResourceType: "vultr_dns_record",
-		},
-		{
-			Group:    "firewall.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "groups",
-		}: {
-			JsonIt:       controllers.GetJSONItr(firewallv1alpha1.GetEncoder(), firewallv1alpha1.GetDecoder()),
-			ResourceType: "vultr_firewall_group",
-		},
-		{
-			Group:    "firewall.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "rules",
-		}: {
-			JsonIt:       controllers.GetJSONItr(firewallv1alpha1.GetEncoder(), firewallv1alpha1.GetDecoder()),
-			ResourceType: "vultr_firewall_rule",
-		},
-		{
-			Group:    "instance.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "instances",
-		}: {
-			JsonIt:       controllers.GetJSONItr(instancev1alpha1.GetEncoder(), instancev1alpha1.GetDecoder()),
-			ResourceType: "vultr_instance",
-		},
-		{
-			Group:    "instance.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "ipv4s",
-		}: {
-			JsonIt:       controllers.GetJSONItr(instancev1alpha1.GetEncoder(), instancev1alpha1.GetDecoder()),
-			ResourceType: "vultr_instance_ipv4",
-		},
-		{
-			Group:    "iso.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "privates",
-		}: {
-			JsonIt:       controllers.GetJSONItr(isov1alpha1.GetEncoder(), isov1alpha1.GetDecoder()),
-			ResourceType: "vultr_iso_private",
-		},
-		{
-			Group:    "kubernetes.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "kubernetes",
-		}: {
-			JsonIt:       controllers.GetJSONItr(kubernetesv1alpha1.GetEncoder(), kubernetesv1alpha1.GetDecoder()),
-			ResourceType: "vultr_kubernetes",
-		},
-		{
-			Group:    "kubernetes.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "nodepools",
-		}: {
-			JsonIt:       controllers.GetJSONItr(kubernetesv1alpha1.GetEncoder(), kubernetesv1alpha1.GetDecoder()),
-			ResourceType: "vultr_kubernetes_node_pools",
-		},
-		{
-			Group:    "load.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "balancers",
-		}: {
-			JsonIt:       controllers.GetJSONItr(loadv1alpha1.GetEncoder(), loadv1alpha1.GetDecoder()),
-			ResourceType: "vultr_load_balancer",
-		},
-		{
-			Group:    "object.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "storages",
-		}: {
-			JsonIt:       controllers.GetJSONItr(objectv1alpha1.GetEncoder(), objectv1alpha1.GetDecoder()),
-			ResourceType: "vultr_object_storage",
-		},
-		{
-			Group:    "private.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "networks",
-		}: {
-			JsonIt:       controllers.GetJSONItr(privatev1alpha1.GetEncoder(), privatev1alpha1.GetDecoder()),
-			ResourceType: "vultr_private_network",
-		},
-		{
-			Group:    "reserved.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "ips",
-		}: {
-			JsonIt:       controllers.GetJSONItr(reservedv1alpha1.GetEncoder(), reservedv1alpha1.GetDecoder()),
-			ResourceType: "vultr_reserved_ip",
-		},
-		{
-			Group:    "reverse.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "ipv4s",
-		}: {
-			JsonIt:       controllers.GetJSONItr(reversev1alpha1.GetEncoder(), reversev1alpha1.GetDecoder()),
-			ResourceType: "vultr_reverse_ipv4",
-		},
-		{
-			Group:    "reverse.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "ipv6s",
-		}: {
-			JsonIt:       controllers.GetJSONItr(reversev1alpha1.GetEncoder(), reversev1alpha1.GetDecoder()),
-			ResourceType: "vultr_reverse_ipv6",
-		},
-		{
-			Group:    "snapshot.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "snapshots",
-		}: {
-			JsonIt:       controllers.GetJSONItr(snapshotv1alpha1.GetEncoder(), snapshotv1alpha1.GetDecoder()),
-			ResourceType: "vultr_snapshot",
-		},
-		{
-			Group:    "snapshot.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "fromurls",
-		}: {
-			JsonIt:       controllers.GetJSONItr(snapshotv1alpha1.GetEncoder(), snapshotv1alpha1.GetDecoder()),
-			ResourceType: "vultr_snapshot_from_url",
-		},
-		{
-			Group:    "ssh.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "keys",
-		}: {
-			JsonIt:       controllers.GetJSONItr(sshv1alpha1.GetEncoder(), sshv1alpha1.GetDecoder()),
-			ResourceType: "vultr_ssh_key",
-		},
-		{
-			Group:    "startup.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "scripts",
-		}: {
-			JsonIt:       controllers.GetJSONItr(startupv1alpha1.GetEncoder(), startupv1alpha1.GetDecoder()),
-			ResourceType: "vultr_startup_script",
-		},
-		{
-			Group:    "user.vultr.kubeform.com",
-			Version:  "v1alpha1",
-			Resource: "users",
-		}: {
-			JsonIt:       controllers.GetJSONItr(userv1alpha1.GetEncoder(), userv1alpha1.GetDecoder()),
-			ResourceType: "vultr_user",
-		},
-	}
-)
+var allJsonIt = map[schema.GroupVersionResource]Data{
+	{
+		Group:    "bare.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "metalservers",
+	}: {
+		JsonIt:       controllers.GetJSONItr(barev1alpha1.GetEncoder(), barev1alpha1.GetDecoder()),
+		ResourceType: "vultr_bare_metal_server",
+	},
+	{
+		Group:    "block.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "storages",
+	}: {
+		JsonIt:       controllers.GetJSONItr(blockv1alpha1.GetEncoder(), blockv1alpha1.GetDecoder()),
+		ResourceType: "vultr_block_storage",
+	},
+	{
+		Group:    "dns.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "domains",
+	}: {
+		JsonIt:       controllers.GetJSONItr(dnsv1alpha1.GetEncoder(), dnsv1alpha1.GetDecoder()),
+		ResourceType: "vultr_dns_domain",
+	},
+	{
+		Group:    "dns.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "records",
+	}: {
+		JsonIt:       controllers.GetJSONItr(dnsv1alpha1.GetEncoder(), dnsv1alpha1.GetDecoder()),
+		ResourceType: "vultr_dns_record",
+	},
+	{
+		Group:    "firewall.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "groups",
+	}: {
+		JsonIt:       controllers.GetJSONItr(firewallv1alpha1.GetEncoder(), firewallv1alpha1.GetDecoder()),
+		ResourceType: "vultr_firewall_group",
+	},
+	{
+		Group:    "firewall.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "rules",
+	}: {
+		JsonIt:       controllers.GetJSONItr(firewallv1alpha1.GetEncoder(), firewallv1alpha1.GetDecoder()),
+		ResourceType: "vultr_firewall_rule",
+	},
+	{
+		Group:    "instance.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "instances",
+	}: {
+		JsonIt:       controllers.GetJSONItr(instancev1alpha1.GetEncoder(), instancev1alpha1.GetDecoder()),
+		ResourceType: "vultr_instance",
+	},
+	{
+		Group:    "instance.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "ipv4s",
+	}: {
+		JsonIt:       controllers.GetJSONItr(instancev1alpha1.GetEncoder(), instancev1alpha1.GetDecoder()),
+		ResourceType: "vultr_instance_ipv4",
+	},
+	{
+		Group:    "iso.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "privates",
+	}: {
+		JsonIt:       controllers.GetJSONItr(isov1alpha1.GetEncoder(), isov1alpha1.GetDecoder()),
+		ResourceType: "vultr_iso_private",
+	},
+	{
+		Group:    "kubernetes.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "kubernetes",
+	}: {
+		JsonIt:       controllers.GetJSONItr(kubernetesv1alpha1.GetEncoder(), kubernetesv1alpha1.GetDecoder()),
+		ResourceType: "vultr_kubernetes",
+	},
+	{
+		Group:    "kubernetes.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "nodepools",
+	}: {
+		JsonIt:       controllers.GetJSONItr(kubernetesv1alpha1.GetEncoder(), kubernetesv1alpha1.GetDecoder()),
+		ResourceType: "vultr_kubernetes_node_pools",
+	},
+	{
+		Group:    "load.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "balancers",
+	}: {
+		JsonIt:       controllers.GetJSONItr(loadv1alpha1.GetEncoder(), loadv1alpha1.GetDecoder()),
+		ResourceType: "vultr_load_balancer",
+	},
+	{
+		Group:    "object.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "storages",
+	}: {
+		JsonIt:       controllers.GetJSONItr(objectv1alpha1.GetEncoder(), objectv1alpha1.GetDecoder()),
+		ResourceType: "vultr_object_storage",
+	},
+	{
+		Group:    "private.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "networks",
+	}: {
+		JsonIt:       controllers.GetJSONItr(privatev1alpha1.GetEncoder(), privatev1alpha1.GetDecoder()),
+		ResourceType: "vultr_private_network",
+	},
+	{
+		Group:    "reserved.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "ips",
+	}: {
+		JsonIt:       controllers.GetJSONItr(reservedv1alpha1.GetEncoder(), reservedv1alpha1.GetDecoder()),
+		ResourceType: "vultr_reserved_ip",
+	},
+	{
+		Group:    "reverse.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "ipv4s",
+	}: {
+		JsonIt:       controllers.GetJSONItr(reversev1alpha1.GetEncoder(), reversev1alpha1.GetDecoder()),
+		ResourceType: "vultr_reverse_ipv4",
+	},
+	{
+		Group:    "reverse.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "ipv6s",
+	}: {
+		JsonIt:       controllers.GetJSONItr(reversev1alpha1.GetEncoder(), reversev1alpha1.GetDecoder()),
+		ResourceType: "vultr_reverse_ipv6",
+	},
+	{
+		Group:    "snapshot.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "snapshots",
+	}: {
+		JsonIt:       controllers.GetJSONItr(snapshotv1alpha1.GetEncoder(), snapshotv1alpha1.GetDecoder()),
+		ResourceType: "vultr_snapshot",
+	},
+	{
+		Group:    "snapshot.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "fromurls",
+	}: {
+		JsonIt:       controllers.GetJSONItr(snapshotv1alpha1.GetEncoder(), snapshotv1alpha1.GetDecoder()),
+		ResourceType: "vultr_snapshot_from_url",
+	},
+	{
+		Group:    "ssh.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "keys",
+	}: {
+		JsonIt:       controllers.GetJSONItr(sshv1alpha1.GetEncoder(), sshv1alpha1.GetDecoder()),
+		ResourceType: "vultr_ssh_key",
+	},
+	{
+		Group:    "startup.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "scripts",
+	}: {
+		JsonIt:       controllers.GetJSONItr(startupv1alpha1.GetEncoder(), startupv1alpha1.GetDecoder()),
+		ResourceType: "vultr_startup_script",
+	},
+	{
+		Group:    "user.vultr.kubeform.com",
+		Version:  "v1alpha1",
+		Resource: "users",
+	}: {
+		JsonIt:       controllers.GetJSONItr(userv1alpha1.GetEncoder(), userv1alpha1.GetDecoder()),
+		ResourceType: "vultr_user",
+	},
+}
 
 func getJsonItAndResType(gvr schema.GroupVersionResource) Data {
 	return allJsonIt[gvr]
