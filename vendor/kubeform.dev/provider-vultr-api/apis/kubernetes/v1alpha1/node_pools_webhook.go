@@ -88,7 +88,7 @@ func (r *NodePools) ValidateUpdate(old runtime.Object) error {
 		return err
 	}
 
-	for key := range nodepoolsForceNewList {
+	for key, _ := range nodepoolsForceNewList {
 		keySplit := strings.Split(key, "/*")
 		length := len(keySplit)
 		checkIfAnyDif := false

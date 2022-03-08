@@ -96,7 +96,7 @@ func (r *MetalServer) ValidateUpdate(old runtime.Object) error {
 		return err
 	}
 
-	for key := range metalserverForceNewList {
+	for key, _ := range metalserverForceNewList {
 		keySplit := strings.Split(key, "/*")
 		length := len(keySplit)
 		checkIfAnyDif := false

@@ -88,7 +88,7 @@ func (r *FromURL) ValidateUpdate(old runtime.Object) error {
 		return err
 	}
 
-	for key := range fromurlForceNewList {
+	for key, _ := range fromurlForceNewList {
 		keySplit := strings.Split(key, "/*")
 		length := len(keySplit)
 		checkIfAnyDif := false
