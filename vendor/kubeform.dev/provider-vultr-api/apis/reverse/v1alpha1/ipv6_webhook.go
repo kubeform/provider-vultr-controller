@@ -90,7 +90,7 @@ func (r *Ipv6) ValidateUpdate(old runtime.Object) error {
 		return err
 	}
 
-	for key := range ipv6ForceNewList {
+	for key, _ := range ipv6ForceNewList {
 		keySplit := strings.Split(key, "/*")
 		length := len(keySplit)
 		checkIfAnyDif := false

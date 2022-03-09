@@ -2,14 +2,15 @@ package vultr
 
 import (
 	"context"
-	"fmt"
+	"math"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceVultrAccount() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrAccountRead,
+		ReadContext: dataSourceVultrAccountRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -25,11 +26,11 @@ func dataSourceVultrAccount() *schema.Resource {
 				Computed: true,
 			},
 			"balance": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"pending_charges": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"last_payment_date": {
@@ -37,31 +38,31 @@ func dataSourceVultrAccount() *schema.Resource {
 				Computed: true,
 			},
 			"last_payment_amount": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 		},
 	}
 }
 
-func dataSourceVultrAccountRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrAccountRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	account, err := client.Account.Get(context.Background())
+	account, err := client.Account.Get(ctx)
 
 	if err != nil {
-		return fmt.Errorf("error getting account info: %v", err)
+		return diag.Errorf("error getting account info: %v", err)
 	}
 
 	d.SetId("account")
 	d.Set("name", account.Name)
 	d.Set("email", account.Email)
-	d.Set("balance", account.Balance)
-	d.Set("pending_charges", account.PendingCharges)
+	d.Set("balance", math.Round(float64(account.Balance)*100)/100)
+	d.Set("pending_charges", math.Round(float64(account.PendingCharges)*100)/100)
 	d.Set("last_payment_date", account.LastPaymentDate)
-	d.Set("last_payment_amount", account.LastPaymentAmount)
+	d.Set("last_payment_amount", math.Round(float64(account.LastPaymentAmount)*100)/100)
 	if err := d.Set("acl", account.ACL); err != nil {
-		return fmt.Errorf("error setting `acls`: %#v", err)
+		return diag.Errorf("error setting `acls`: %#v", err)
 	}
 	return nil
 }

@@ -88,7 +88,7 @@ func (r *Script) ValidateUpdate(old runtime.Object) error {
 		return err
 	}
 
-	for key := range scriptForceNewList {
+	for key, _ := range scriptForceNewList {
 		keySplit := strings.Split(key, "/*")
 		length := len(keySplit)
 		checkIfAnyDif := false
