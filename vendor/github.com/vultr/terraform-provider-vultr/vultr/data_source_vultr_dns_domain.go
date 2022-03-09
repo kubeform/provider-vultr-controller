@@ -2,15 +2,15 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func dataSourceVultrDNSDomain() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrDNSDomainRead,
+		ReadContext: dataSourceVultrDNSDomainRead,
 		Schema: map[string]*schema.Schema{
 			"domain": {
 				Type:         schema.TypeString,
@@ -22,20 +22,25 @@ func dataSourceVultrDNSDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"dns_sec": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 
-func dataSourceVultrDNSDomainRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	domain, err := client.Domain.Get(context.Background(), d.Get("domain").(string))
+	domain, err := client.Domain.Get(ctx, d.Get("domain").(string))
 	if err != nil {
-		return fmt.Errorf("error getting dns domains: %v", err)
+		return diag.Errorf("error getting dns domains: %v", err)
 	}
 
 	d.SetId(domain.Domain)
 	d.Set("domain", domain.Domain)
 	d.Set("date_created", domain.DateCreated)
+	d.Set("dns_sec", domain.DNSSec)
 	return nil
 }

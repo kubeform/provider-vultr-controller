@@ -95,6 +95,7 @@ type KubernetesSpecResource struct {
 	Endpoint *string `json:"endpoint,omitempty" tf:"endpoint"`
 	// +optional
 	Ip *string `json:"ip,omitempty" tf:"ip"`
+	// Base64 encoded KubeConfig
 	// +optional
 	KubeConfig *string                  `json:"kubeConfig,omitempty" tf:"kube_config"`
 	Label      *string                  `json:"label" tf:"label"`

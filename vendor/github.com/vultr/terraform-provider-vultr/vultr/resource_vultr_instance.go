@@ -69,7 +69,6 @@ func resourceVultrInstance() *schema.Resource {
 			"enable_ipv6": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  false,
 			},
 			"enable_private_network": {
 				Type:       schema.TypeBool,
@@ -109,7 +108,6 @@ func resourceVultrInstance() *schema.Resource {
 			"activation_email": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true,
 			},
 			"ddos_protection": {
 				Type:     schema.TypeBool,
@@ -366,7 +364,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	instance, err := client.Instance.Get(ctx, d.Id())
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "invalid server") {
+		if strings.Contains(err.Error(), "invalid instance ID") {
 			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
 			d.SetId("")
 			return nil
@@ -398,6 +396,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	d.Set("os_id", instance.OsID)
 	d.Set("app_id", instance.AppID)
 	d.Set("features", instance.Features)
+	d.Set("hostname", instance.Hostname)
 
 	backup, err := client.Instance.GetBackupSchedule(ctx, d.Id())
 	if err != nil {
@@ -517,7 +516,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 
 	}
 
-	if err := client.Instance.Update(ctx, d.Id(), req); err != nil {
+	if _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
 		return diag.Errorf("error updating instance %s : %s", d.Id(), err.Error())
 	}
 
@@ -549,6 +548,23 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	// Changing the hostname can only be done via a reinstall
+	// Since this is a full reinstall we also put in the status waits so TF doesn't continue processing until the instance is fully up
+	if d.HasChange("hostname") {
+		req := &govultr.ReinstallReq{Hostname: d.Get("hostname").(string)}
+		if _, err := client.Instance.Reinstall(ctx, d.Id(), req); err != nil {
+			return diag.Errorf("error changing hostname for %s : %v", d.Id(), err)
+		}
+
+		if _, err := waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
+			return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
+		}
+
+		if _, err := waitForServerAvailable(ctx, d, "running", []string{"stopped"}, "power_status", meta); err != nil {
+			return diag.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+		}
+	}
+
 	// There is a delay between the API data returning the newly updated plan change
 	// This will wait until the plan has been updated before going to the read call
 	if d.HasChange("plan") {
@@ -572,7 +588,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
 		}
 
-		if err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
